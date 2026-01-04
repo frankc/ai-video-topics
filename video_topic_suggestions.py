@@ -34,6 +34,7 @@ What would you like to learn about?
 - "How do transformers work?"
 - "How can I use AI for market research?"
 - "What's the difference between RAG and fine-tuning?"
+- "Tokens - what are they?"
 """)
 
 st.markdown("---")
