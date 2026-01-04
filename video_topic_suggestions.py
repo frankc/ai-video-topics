@@ -140,6 +140,6 @@ with st.sidebar:
             pass
     
     st.markdown("---")
-    st.write("📧 drC@berkeleyai.edu")
+    st.write("📧 drc@frank-coyle.ai")
     st.write("🔗 [LinkedIn](https://linkedin.com/in/frank-coyle)")
 
