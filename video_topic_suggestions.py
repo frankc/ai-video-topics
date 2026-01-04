@@ -41,7 +41,7 @@ def send_email_notification(name, email, topic, background=""):
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = receiver_email
-        msg['Subject'] = f"New AI Video Topic: {topic[:50]}..."
+        msg['Subject'] = f"[VIDEO TOPIC] {topic[:60]}..."
         
         # Email body
         body = f"""
@@ -196,3 +196,4 @@ with st.sidebar:
     st.markdown("---")
     st.write("📧 drC@berkeleyai.edu")
     st.write("🔗 [LinkedIn](https://linkedin.com/in/frank-coyle)")
+
