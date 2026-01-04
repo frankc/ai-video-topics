@@ -2,6 +2,9 @@ import streamlit as st
 import json
 import os
 from datetime import datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Set page config
 st.set_page_config(
@@ -22,6 +25,54 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# Email notification function
+def send_email_notification(name, email, topic, background=""):
+    """Send email notification when new topic is suggested"""
+    try:
+        # Email configuration from Streamlit secrets
+        sender_email = st.secrets.get("email", {}).get("sender", "")
+        sender_password = st.secrets.get("email", {}).get("password", "")
+        receiver_email = st.secrets.get("email", {}).get("receiver", "drc@frank-coyle.ai")
+        
+        if not sender_email or not sender_password:
+            return False  # Skip email if not configured
+        
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+        msg['Subject'] = f"New AI Video Topic: {topic[:50]}..."
+        
+        # Email body
+        body = f"""
+New Video Topic Suggestion Received!
+
+From: {name}
+Email: {email}
+Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+TOPIC:
+{topic}
+
+BACKGROUND:
+{background if background else "Not provided"}
+
+---
+Reply to this submitter at: {email}
+"""
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Send email via Gmail SMTP
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+        
+        return True
+    except Exception as e:
+        # Silently fail - don't break the form if email fails
+        return False
+
 # Header
 st.title("🎬 Suggest an AI Video Topic")
 st.markdown("### What AI topic should Dr. C explain next?")
@@ -34,7 +85,6 @@ What would you like to learn about?
 - "How do transformers work?"
 - "How can I use AI for market research?"
 - "What's the difference between RAG and fine-tuning?"
-- "Tokens - what are they?"
 """)
 
 st.markdown("---")
@@ -104,6 +154,9 @@ if submitted:
         except Exception as e:
             pass  # Continue even if save fails
         
+        # Send email notification
+        email_sent = send_email_notification(name, email, suggested_topic, background)
+        
         # Simple success message
         st.success(f"✅ Thanks {name}! I'll email you when I create this video.")
         st.balloons()
@@ -141,6 +194,5 @@ with st.sidebar:
             pass
     
     st.markdown("---")
-    st.write("📧 drc@frank-coyle.ai")
+    st.write("📧 drC@berkeleyai.edu")
     st.write("🔗 [LinkedIn](https://linkedin.com/in/frank-coyle)")
-
